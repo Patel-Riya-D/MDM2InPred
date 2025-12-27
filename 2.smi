@@ -1,0 +1,32 @@
+C[C@@]1(C[C@@H]([C@H](N(C1=O)[C@H](CS(=O)(=O)N(C)C)C2CC2)C3=CC=C(C=C3)Cl)C4=CC(=CC=C4)Cl)CC(=O)O
+CN1C2=C(C(N3C1=NC=N3)C4=CC=C(C=C4)Br)C(OC5=C2C=CC=C5Cl)C6=CC=C(C=C6)Br
+
+
+
+with subtab3:
+        st.subheader("🔄 Converter: pIC50 ↔ IC50")
+
+        conversion_type = st.radio("Select conversion type:", ["pIC50 ➝ IC50", "IC50 ➝ pIC50"])
+
+        if conversion_type == "pIC50 ➝ IC50":
+            pic50_value = st.text_input("Enter pIC50 value:", key="pic50_input")
+            if st.button("Convert to IC50", key="convert_pic50"):
+                try:
+                    pic50_value = float(pic50_value)
+                    ic50_value = 10 ** (6 - pic50_value)
+                    st.success(f"IC50 value: {ic50_value:.6f} M")
+                except ValueError:
+                    st.error("Please enter a valid number for pIC50.")
+
+        elif conversion_type == "IC50 ➝ pIC50":
+            ic50_value = st.text_input("Enter IC50 value (in M):", key="ic50_input")
+            if st.button("Convert to pIC50", key="convert_ic50"):
+                try:
+                    ic50_value = float(ic50_value)
+                    if ic50_value > 0:
+                        pic50_value = 6 - (math.log10(ic50_value))
+                        st.success(f"pIC50 value: {pic50_value:.6f}")
+                    else:
+                        st.error("IC50 must be greater than 0")
+                except ValueError:
+                    st.error("Please enter a valid number for IC50.")

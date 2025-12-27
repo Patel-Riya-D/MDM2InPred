@@ -1,0 +1,6 @@
+streamlit
+pandas
+joblib
+padelpy
+rdkit-pypi
+cohere
