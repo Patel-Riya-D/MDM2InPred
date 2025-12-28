@@ -1,0 +1,6 @@
+*.pkl
+*.csv
+*.mp4
+*.env
+smilesenv/
+__pycache__/
