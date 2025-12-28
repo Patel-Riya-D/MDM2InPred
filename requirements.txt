@@ -2,6 +2,6 @@ streamlit
 pandas
 joblib
 padelpy
-rdkit-pypi
+rdkit-pypi==2022.9.5
 cohere
 huggingface_hub
