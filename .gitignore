@@ -4,3 +4,4 @@
 *.env
 smilesenv/
 __pycache__/
+.streamlit/secrets.toml
