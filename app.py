@@ -9,14 +9,11 @@ from padelpy import from_smiles
 from rdkit import Chem
 import base64
 import cohere
+from huggingface_hub import hf_hub_download
 
 # ------------------------------
 # CONFIG - Update paths
 # ------------------------------
-MODEL_PATHS = {
-    "Model 1": "lightgbm.pkl",
-    "Model 2": "rf.pkl"
-}
 FEATURE_PATHS = {
     "Model 1": "newm1_aligned_376.csv",
     "Model 2": "rf_ready_newm2.csv"
@@ -126,6 +123,18 @@ def IC50_to_pIC50(IC50):
 # ------------------------------
 # Helper Functions
 # ------------------------------
+# ------------------------------
+# Load model from Hugging Face
+# ------------------------------
+@st.cache_resource
+def load_model_from_hf(filename):
+    model_path = hf_hub_download(
+        repo_id="riya-patel/MDM2InPred-models",
+        filename=filename,
+        token=st.secrets["HF_TOKEN"]
+    )
+    return joblib.load(model_path)
+
 def filter_valid_smiles(smiles_list):
     valid, invalid = [], []
     for s in smiles_list:
@@ -186,8 +195,15 @@ def run_prediction(model_key, smiles_input, uploaded):
 
     with st.spinner("Generating descriptors using PaDELPy..."):
         desc_df = generate_descriptors_safe_individual(smiles_list)
+    
+        # ------------------------------
+    # LOAD MODEL FROM HUGGING FACE
+    # ------------------------------
+    if model_key == "Model 1":
+        model = load_model_from_hf("lightgbm.pkl")
+    else:
+        model = load_model_from_hf("rf.pkl")
 
-    model = joblib.load(MODEL_PATHS[model_key])
     training_features = pd.read_csv(FEATURE_PATHS[model_key]).columns.tolist()
 
     common_features = [f for f in training_features if f in desc_df.columns]
@@ -675,6 +691,7 @@ with tab_pred:
             run_prediction("Model 1", smiles_input, uploaded)
         else:
             run_prediction("Model 2", smiles_input, uploaded)
+
 
 # ------------------------------
 # CONVERTER

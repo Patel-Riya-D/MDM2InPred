@@ -4,3 +4,4 @@ joblib
 padelpy
 rdkit-pypi
 cohere
+huggingface_hub
