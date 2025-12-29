@@ -1,6 +1,7 @@
 FROM python:3.10-slim
 
 RUN apt-get update && apt-get install -y \
+    openjdk-11-jre-headless \
     build-essential \
     wget \
     curl \
