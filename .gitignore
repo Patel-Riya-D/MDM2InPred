@@ -5,3 +5,7 @@
 smilesenv/
 __pycache__/
 .streamlit/secrets.toml
+.env
+.env.*
+venv/
+.venv/
