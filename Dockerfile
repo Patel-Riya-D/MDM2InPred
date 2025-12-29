@@ -1,28 +1,25 @@
 FROM python:3.10-slim
 
-# System dependencies
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
+    openjdk-17-jre-headless \
     build-essential \
-    openjdk-17-jre \
     wget \
     curl \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-# RDKit installation
-RUN pip install --no-cache-dir rdkit-pypi
-
 # Set working directory
 WORKDIR /app
 
-# Copy files
+# Copy requirements first (better caching)
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
 
+# Install Python dependencies
+RUN pip install --upgrade pip && pip install -r requirements.txt
+
+# Copy the rest of the app
 COPY . .
 
-# Expose Streamlit port
-EXPOSE 7860
-
-# Streamlit command
-CMD ["streamlit", "run", "app.py", "--server.port=7860", "--server.address=0.0.0.0"]
+# Run Streamlit app (Render-compatible)
+CMD streamlit run app.py --server.address=0.0.0.0 --server.port=$PORT
