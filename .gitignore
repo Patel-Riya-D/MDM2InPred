@@ -1,11 +1,40 @@
-*.pkl
-*.csv
-*.mp4
-*.env
+# =========================
+# Virtual Environments
+# =========================
 smilesenv/
-__pycache__/
-.streamlit/secrets.toml
-.env
-.env.*
 venv/
 .venv/
+
+# =========================
+# Environment / Secrets
+# =========================
+.env
+.env.*
+*.env
+
+# =========================
+# Python cache
+# =========================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# =========================
+# Streamlit
+# =========================
+.streamlit/secrets.toml
+
+# =========================
+# OS / Editor files
+# =========================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# =========================
+# Logs & temp
+# =========================
+*.log
+*.tmp
