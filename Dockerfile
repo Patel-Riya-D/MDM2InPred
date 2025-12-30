@@ -1,8 +1,10 @@
 FROM python:3.10-slim
 
-# Install system dependencies (Java 11 + build tools)
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install system dependencies (Java for padelpy)
 RUN apt-get update && apt-get install -y \
-    openjdk-11-jre-headless \
+    openjdk-17-jre-headless \
     build-essential \
     wget \
     curl \
@@ -11,16 +13,15 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
+# Install Python deps first (better caching)
 COPY requirements.txt .
+RUN pip install --upgrade pip && pip install -r requirements.txt
 
-# Install Python dependencies
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
-
+# Copy app code
 COPY . .
 
-# Streamlit port
-EXPOSE 7860
+# Render provides PORT env variable
+ENV PORT=8501
+EXPOSE 8501
 
-# Run app
-CMD ["streamlit", "run", "app.py", "--server.port=7860", "--server.address=0.0.0.0"]
+CMD ["sh", "-c", "streamlit run app.py --server.port=$PORT --server.address=0.0.0.0"]
