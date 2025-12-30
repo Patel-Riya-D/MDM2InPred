@@ -28,10 +28,10 @@ jsonschema-specifications==2025.4.1
 lightgbm==4.6.0
 MarkupSafe==3.0.2
 narwhals==2.2.0
-numpy==2.3.2
+numpy==1.26.4
 packaging==25.0
 padelpy==0.1.16
-pandas==2.3.2
+pandas==2.1.4
 pillow==11.3.0
 protobuf==6.32.0
 pyarrow==21.0.0
