@@ -25,6 +25,11 @@ DATASET_PATH = "main.csv"  # your main dataset file
 # ------------------------------
 st.set_page_config(page_title="MDM2 pIC50 Prediction", layout="wide")
 
+st.markdown("""
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+""", unsafe_allow_html=True)
+
+
 # ------------------------------
 # Custom CSS (Theme)
 # ------------------------------
@@ -38,11 +43,15 @@ st.markdown("""
 
 /* Title */
 .main-title {
+    font-size: 42px;
+    font-weight: 700;
+    color: #006666;
     text-align: center;
-    font-size: 10px;
-    font-family: 'zimula'; 
-    font-weight: bold;
-    margin-bottom: 0px;
+    font-family: 'Playfair Display', serif;
+    margin-bottom: 10px;
+    text-shadow: 0px 2px 4px rgba(0,0,0,0.15);
+    letter-spacing: 0.5px;
+
 }
 
 /* Tabs */
@@ -68,7 +77,7 @@ st.markdown("""
     font-size: 18px !important;
     font-weight: 600 !important;
     color: #006666 !important;
-    font-family: "Times New Roman", serif !important;
+    font-family: 'Inter', sans-serif !important;
 }
 
 /* Active tab */
@@ -232,7 +241,7 @@ def run_prediction(model_key, smiles_input, uploaded):
     st.markdown("<div class='result-box'>", unsafe_allow_html=True)
     st.markdown(
         """
-        <h2 style='color:#006666; font-size:40px; font-family:"Times New Roman", serif; font-weight:bold;'>
+        <h2 style='color:#006666; font-size:40px; font-family: 'Inter', sans-serif !important; font-weight:bold;'>
             Prediction Results
         </h2>
         """,
@@ -409,7 +418,7 @@ st.markdown("""
 /* Increase tab font size */
 .stTabs [role="tab"] p {
     font-size: 20px !important;   /* adjust size */
-    font-family: times new roman;
+    font-family: 'Inter', sans-serif !important;
     padding-bottom: 0px !important;
 }
 </style>
@@ -442,7 +451,7 @@ with tab_home:
             unsafe_allow_html=True
         )
         st.markdown('<div class="custom-img">', unsafe_allow_html=True)
-        st.image("img1.jpg", use_container_width=True, output_format="PNG")
+        st.image("img1.jpg", output_format="PNG")
         st.markdown('</div>', unsafe_allow_html=True)
 
     # Right side (Intro Paragraph)
@@ -456,7 +465,6 @@ with tab_home:
                 text-align: justify;
                 margin-top: 90px;
                 margin-left: 100px;
-                font-family:book antiqua;
             }
             </style>
             <div class="intro-box">
@@ -489,7 +497,6 @@ with tab_home:
         padding: 20px;
         margin-top: 25px;
         margin-left: 150px;
-        font-family:book antiqua;
     }
     .module-box2 {
         background: #ffffff;
@@ -498,7 +505,6 @@ with tab_home:
         padding: 20px;
         margin-top: -200px;
         margin-left: 700px;
-        font-family:book antiqua;
     }
     .module-title {
         font-size: 24px;
@@ -581,14 +587,12 @@ with tab_pred:
     .prediction-text {
         font-size: 18px;
         text-align: justify;
-        font-family:book antiqua;
     }
     .prediction-title {
         font-size: 30px;
         text-align: center;
         color: #006666;
         font-weight: bold;
-        font-family: zumila;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -612,7 +616,6 @@ with tab_pred:
     /* Style for st.radio label (Select Model:) */
     div[data-testid="stRadio"] p {
         font-size: 16px !important;
-        font-family: zumila;
         font-weight: normal !important;
         color: #000000 !important;
     }
@@ -620,7 +623,6 @@ with tab_pred:
     /* Style for st.write text like "You selected:" */
     div[data-testid="stMarkdownContainer"] p {
         font-size: 16px !important;
-        font-family: zumila;
         font-weight: normal !important;
         color: #000000 !important;
     }
@@ -629,7 +631,6 @@ with tab_pred:
     div[data-testid="stTextArea"] label p {
         font-size: 16px !important;
         font-weight: normal !important;
-        font-family: zumila;
         color: #000000 !important;
     }
     </style>
@@ -651,7 +652,7 @@ with tab_pred:
         background-color: #f0ffff !important;  /* light cyan */
         color: #003333 !important;             /* dark teal text */
         font-size: 20px !important;
-        font-family: "Courier New", monospace !important;
+        font-family: 'Inter', sans-serif !important;
         border: 2px solid #006666 !important;
         border-radius: 0px !important;
     }
@@ -881,7 +882,6 @@ with tab_help:
         margin-top: 0px;
     }
     .help-title {
-        font-family: book antiqua;
         font-size: 20px;
     }
     </style>
@@ -924,7 +924,7 @@ with tab_contact:
         color: #006666;
         font-weight: 700;
         margin: 20px 0 30px 0;
-        font-family: 'Segoe UI', sans-serif;
+        font-family: 'Inter', sans-serif;
     }
     .profile-card {
         background: #f9f9f9;
@@ -1018,7 +1018,7 @@ with tab_chat:
         font-weight: bold;
         margin-top: 10px;
         margin-bottom: 5px;
-        font-family: 'Segoe UI', sans-serif;
+        font-family: 'Inter', sans-serif;
     }
     </style>
     """, unsafe_allow_html=True)
