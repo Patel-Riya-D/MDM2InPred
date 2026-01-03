@@ -106,7 +106,18 @@ st.markdown("""
 # ------------------------------
 # IMPORTANT: set COHERE_API_KEY in .streamlit/secrets.toml
 # COHERE_API_KEY = "your-key-here"
-co = cohere.Client(st.secrets["COHERE_API_KEY"])
+#co = cohere.Client(st.secrets["COHERE_API_KEY"])
+# ------------------------------
+# Cohere Client (Render-safe)
+# ------------------------------
+COHERE_API_KEY = os.getenv("COHERE_API_KEY")
+
+if not COHERE_API_KEY:
+    st.error("COHERE_API_KEY not found. Please set it in Render Environment Variables.")
+    st.stop()
+
+co = cohere.Client(COHERE_API_KEY)
+
 
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []  # list of {"role": "user"/"bot", "text": "..."}
