@@ -193,29 +193,83 @@ def generate_descriptors_safe_individual(smiles_list):
     return pd.concat(all_desc, ignore_index=True)
 
 def run_prediction(model_key, smiles_input, uploaded):
+    if not smiles_input.strip() and not uploaded:
+        st.error("Please paste SMILES or upload a valid .smi file before running prediction.")
+        return
+    # ------------------------------
+    # Read input (textarea OR file)
+    # ------------------------------
     if smiles_input.strip():
         smiles_list = [line.strip() for line in smiles_input.strip().splitlines()]
+
     elif uploaded:
-        smiles_list = [line.decode("utf-8").strip() for line in uploaded.readlines()]
+        # 🔥 FIX 3: enforce valid .smi file contents
+        raw_lines = [
+            line.decode("utf-8", errors="ignore").strip()
+            for line in uploaded.readlines()
+        ]
+
+        # remove empty lines & comments
+        smiles_list = [
+            l for l in raw_lines
+            if l and not l.startswith("#")
+        ]
+
+        if not smiles_list:
+            st.error("Uploaded .smi file is empty or invalid.")
+            return
+
     else:
-        st.error("Please provide SMILES input or upload a file.")
+        st.error("Please paste SMILES or upload a valid .smi file.")
         return
 
-    smiles_list, invalid_smiles = filter_valid_smiles(smiles_list)
-    if invalid_smiles:
-        st.warning(f"{len(invalid_smiles)} invalid SMILES removed. Examples: {invalid_smiles[:5]}")
-    if not smiles_list:
-        st.error("No valid SMILES to process!")
+
+ # ------------------------------
+# Strong SMILES validation
+# ------------------------------
+
+    # Remove empty lines
+    smiles_list = [s.strip() for s in smiles_list if s.strip()]
+
+    # Reject obvious non-SMILES tokens (code / text)
+    bad_tokens = ["if", "try", "except", "st.", "with", "def", "elif", "else"]
+
+    cleaned = []
+    rejected = []
+
+    for s in smiles_list:
+        if any(tok in s for tok in bad_tokens):
+            rejected.append(s)
+        elif Chem.MolFromSmiles(s):
+            cleaned.append(s)
+        else:
+            rejected.append(s)
+
+    if rejected:
+        st.warning(
+            f"{len(rejected)} invalid SMILES removed. "
+            f"Examples: {rejected[:5]}"
+        )
+
+    if not cleaned:
+        st.error("No valid SMILES found. Please enter chemical SMILES only.")
         return
+
+    # Final validated list
+    smiles_list = cleaned
+
+    # Limit for Render / Streamlit
     MAX_SMILES = 30
     if len(smiles_list) > MAX_SMILES:
-        st.error("Maximum 30 SMILES allowed on Streamlit Cloud.")
+        st.error("Maximum 30 SMILES allowed.")
         return
 
-
+    # ------------------------------
+    # Descriptor generation
+    # ------------------------------
     with st.spinner("Generating descriptors using PaDELPy..."):
         desc_df = generate_descriptors_safe_individual(smiles_list)
-    
+
         # ------------------------------
     # LOAD MODEL FROM HUGGING FACE
     # ------------------------------
@@ -661,6 +715,8 @@ with tab_pred:
 
     # SMILES input
     smiles_input = st.text_area("Paste SMILES string(s):", key="smiles_input")
+    st.info("⚠️ Enter ONLY chemical SMILES (one per line). Do not paste code, text, or headings.")
+
 
     # Example text changes depending on model
     if "LightGBM" in model_choice:
@@ -696,6 +752,8 @@ with tab_pred:
 
     # File uploader
     uploaded = st.file_uploader("Or upload a .smi file", type=["smi"], key="file_upload")
+    
+
 
     # Prediction button
     if st.button("Run Prediction"):
