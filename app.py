@@ -12,6 +12,13 @@ import cohere
 from huggingface_hub import hf_hub_download
 
 # ------------------------------
+# Safe session initialization
+# ------------------------------
+if "chat_history" not in st.session_state:
+    st.session_state["chat_history"] = []
+
+
+# ------------------------------
 # CONFIG - Update paths
 # ------------------------------
 FEATURE_PATHS = {
