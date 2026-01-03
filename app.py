@@ -5,8 +5,6 @@ import tempfile
 import shutil
 import os
 import math
-from padelpy import from_smiles
-from rdkit import Chem
 import base64
 import cohere
 from huggingface_hub import hf_hub_download
@@ -31,6 +29,8 @@ DATASET_PATH = "main.csv"  # your main dataset file
 # Page Config
 # ------------------------------
 st.set_page_config(page_title="MDM2 pIC50 Prediction", layout="wide")
+st.session_state.setdefault("chat_history", [])
+
 
 st.markdown("""
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -172,6 +172,9 @@ def filter_valid_smiles(smiles_list):
     return valid, invalid
 
 def generate_descriptors_safe_individual(smiles_list):
+    from padelpy import from_smiles
+    from rdkit import Chem
+
     tmpdir = tempfile.mkdtemp()
     os.environ["JAVA_TOOL_OPTIONS"] = "-Xmx4G"
     all_desc = []
@@ -200,6 +203,7 @@ def generate_descriptors_safe_individual(smiles_list):
     return pd.concat(all_desc, ignore_index=True)
 
 def run_prediction(model_key, smiles_input, uploaded):
+    from rdkit import Chem
     if not smiles_input.strip() and not uploaded:
         st.error("Please paste SMILES or upload a valid .smi file before running prediction.")
         return
@@ -274,8 +278,9 @@ def run_prediction(model_key, smiles_input, uploaded):
     # ------------------------------
     # Descriptor generation
     # ------------------------------
-    with st.spinner("Generating descriptors using PaDELPy..."):
-        desc_df = generate_descriptors_safe_individual(smiles_list)
+    if st.button("Run Prediction"):
+        with st.spinner("Generating descriptors using PaDELPy..."):
+            desc_df = generate_descriptors_safe_individual(smiles_list)
 
         # ------------------------------
     # LOAD MODEL FROM HUGGING FACE
@@ -721,7 +726,17 @@ with tab_pred:
     """, unsafe_allow_html=True)
 
     # SMILES input
-    smiles_input = st.text_area("Paste SMILES string(s):", key="smiles_input")
+    # ---- Persistent input (prevents cursor loss) ----
+    if "smiles_input" not in st.session_state:
+        st.session_state.smiles_input = ""
+
+    smiles_input = st.text_area(
+        "Paste SMILES string(s):",
+        value=st.session_state.smiles_input,
+        key="smiles_input",
+        height=120
+    )
+
     st.info("⚠️ Enter ONLY chemical SMILES (one per line). Do not paste code, text, or headings.")
 
 
